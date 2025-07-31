@@ -2,7 +2,9 @@
 
 A clean and modern **e-commerce UI** built with **Flutter**.
 
-![Ecommerce UI](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO9H1-8qFnFHjkDzjE3whMmuCbMjEf2kNWYw&s)
+<p align="center">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO9H1-8qFnFHjkDzjE3whMmuCbMjEf2kNWYw&s" alt="Ecommerce UI"/>
+</p>
 
 ---
 
