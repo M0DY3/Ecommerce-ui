@@ -1,14 +1,26 @@
-# Ecommerce UI
+# 🛍️ Ecommerce UI
 
-A clean and simple e-commerce UI built with Flutter.
+A clean and modern **e-commerce UI** built with **Flutter**.
 
-## Features
-- Category icons (Laptop, Phone, TV, etc.)
-- Best selling products in a responsive grid
-- Modern layout with clean design
+![Ecommerce UI](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO9H1-8qFnFHjkDzjE3whMmuCbMjEf2kNWYw&s)
 
-## Getting Started
+---
 
-1. Clone the repository:
+## ✨ Features
+
+- 📦 Category icons (Laptop, Phone, TV, Bike, etc.)
+- 🛍️ Best-selling product grid
+- 💡 Minimal & responsive layout
+- 📱 Smooth scrolling & UI elements
+
+---
+
+## 🚀 Getting Started
+
+To run the project locally:
+
 ```bash
 git clone https://github.com/M0DY3/Ecommerce-ui.git
+cd Ecommerce-ui
+flutter pub get
+flutter run
