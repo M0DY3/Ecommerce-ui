@@ -1,4 +1,7 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
+import 'package:flutter_course/detail_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,6 +57,31 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("Mody Shop"),
+        titleTextStyle: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        backgroundColor: Colors.blue,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        iconSize: 30,
+        selectedItemColor: Colors.blue,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag_outlined),
+            label: "Shop",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_box_rounded),
+            label: "Account",
+          ),
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -121,11 +149,29 @@ class _HomePageState extends State<HomePage> {
               ),
               itemBuilder: (context, index) {
                 final item = sellingItems[index];
-                return _buildSelling(
-                  item['image'],
-                  item['title'],
-                  item['subtitle'],
-                  item['price'],
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Detail_item(data: item),
+                        ),
+                      );
+                      // TODO: Add navigation or action here
+                      print('Tapped on ${item['title']}');
+                    },
+                    borderRadius: BorderRadius.circular(12),
+                    child: _buildSelling(
+                      item['image'],
+                      item['title'],
+                      item['subtitle'],
+                      item['price'],
+                    ),
+                  ),
                 );
               },
             ),
