@@ -1,6 +1,5 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
+import 'package:flutter_course/CartPage.dart';
 import 'package:flutter_course/detail_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,6 +10,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  // Initialize an empty cartItems list
+  List<Map<String, dynamic>> cartItems = [];
+
+  void _onTap(int index) {
+    if (index == 1) {
+      // Navigate to Cart
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              CartPage(cartItems: cartItems), // Pass cartItems to CartPage
+        ),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
   // 🔷 Dynamic categories
   final List<Map<String, dynamic>> categories = [
     {'icon': Icons.laptop, 'label': 'Laptop'},
@@ -57,25 +78,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Mody Shop"),
-        titleTextStyle: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-        backgroundColor: Colors.blue,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: _buildAppBar(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         iconSize: 30,
         selectedItemColor: Colors.blue,
+        onTap: _onTap, // Add this line to handle navigation
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: "Shop",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.card_travel), label: "Cart"),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box_rounded),
             label: "Account",
@@ -158,10 +171,12 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => Detail_item(data: item),
+                          builder: (context) => DetailItem(
+                            data: item, // Pass item data
+                            cartItems: cartItems, // Pass cartItems here
+                          ),
                         ),
                       );
-                      // TODO: Add navigation or action here
                       print('Tapped on ${item['title']}');
                     },
                     borderRadius: BorderRadius.circular(12),
@@ -176,6 +191,21 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      centerTitle: true,
+      backgroundColor: Colors.blue,
+      title: Text(
+        "Mody Shop",
+        style: TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
     );
