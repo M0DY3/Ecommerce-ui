@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_course/CartPage.dart';
+import 'package:flutter_course/account.dart';
 import 'package:flutter_course/detail_item.dart';
+import 'package:flutter_course/products.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +27,14 @@ class _HomePageState extends State<HomePage> {
               CartPage(cartItems: cartItems), // Pass cartItems to CartPage
         ),
       );
+    }
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AccountPage(cartItems: cartItems),
+        ),
+      );
     } else {
       setState(() {
         _selectedIndex = index;
@@ -41,39 +51,15 @@ class _HomePageState extends State<HomePage> {
     {'icon': Icons.car_crash, 'label': 'Car'},
   ];
 
-  // 🔶 Dynamic selling items
-  final List<Map<String, dynamic>> sellingItems = [
-    {
-      'image': 'images/headphone.jpg',
-      'title': 'Headphone',
-      'subtitle': 'High quality',
-      'price': 12,
-    },
-    {
-      'image': 'images/laptop.jpg',
-      'title': 'Laptop',
-      'subtitle': 'Fast and sleek',
-      'price': 80,
-    },
-    {
-      'image': 'images/tv.jpg',
-      'title': 'TV',
-      'subtitle': 'Smart 4K UHD',
-      'price': 50,
-    },
-    {
-      'image': 'images/phone.jpg',
-      'title': 'Phone',
-      'subtitle': 'Latest model',
-      'price': 300,
-    },
-    {
-      'image': 'images/bike.jpg',
-      'title': 'Bike',
-      'subtitle': 'Mountain bike',
-      'price': 120,
-    },
-  ];
+  late Future<List<dynamic>>? topProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    topProducts = Products.fetchProducts().then(
+      (products) => products.take(3).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +127,25 @@ class _HomePageState extends State<HomePage> {
             ),
 
             const SizedBox(height: 20),
+            Container(
+              child: Center(
+                child: Container(
+                  child: MaterialButton(
+                    color: Colors.grey[300],
+                    textColor: Colors.black,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Products()),
+                      );
+                    },
+                    child: Text('all our products'),
+                  ),
+                ),
+              ),
+            ),
 
+            // 💰 Best Selling Section
             // 💰 Best Selling Section
             const Text(
               "Best Selling",
@@ -149,45 +153,58 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
 
-            // 🛒 Product Grid
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: sellingItems.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemBuilder: (context, index) {
-                final item = sellingItems[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailItem(
-                            data: item, // Pass item data
-                            cartItems: cartItems, // Pass cartItems here
+            FutureBuilder<List<dynamic>>(
+              future: topProducts,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text("Error: ${snapshot.error}"));
+                } else if (snapshot.hasData) {
+                  final products = snapshot.data!;
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: products.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                    itemBuilder: (context, index) {
+                      final item = products[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => DetailItem(
+                                  data: item,
+                                  cartItems: cartItems,
+                                ),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: _buildSelling(
+                            item['image'],
+                            item['title'],
+                            item['category'], // or 'description' if you prefer
+                            (item['price'] as num).toInt(),
                           ),
                         ),
                       );
-                      print('Tapped on ${item['title']}');
                     },
-                    borderRadius: BorderRadius.circular(12),
-                    child: _buildSelling(
-                      item['image'],
-                      item['title'],
-                      item['subtitle'],
-                      item['price'],
-                    ),
-                  ),
-                );
+                  );
+                } else {
+                  return const Center(child: Text("No products found"));
+                }
               },
             ),
           ],
@@ -198,16 +215,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAppBar() {
     return AppBar(
-      centerTitle: true,
-      backgroundColor: Colors.blue,
-      title: Text(
-        "Mody Shop",
-        style: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
+      title: Text("Mody Shop"),
+      leading: Image.asset("images/logo.png"),
     );
   }
 
@@ -258,7 +267,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               image: DecorationImage(
-                image: AssetImage(imgPath),
+                image: NetworkImage(imgPath),
                 fit: BoxFit.contain,
               ),
             ),

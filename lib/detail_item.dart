@@ -2,35 +2,30 @@ import 'package:flutter/material.dart';
 import 'CartPage.dart';
 
 class DetailItem extends StatefulWidget {
-  // Receive data and cartItems from HomePage
   final Map<String, dynamic> data;
-  final List<Map<String, dynamic>> cartItems; // This will hold the cart items
+  final List<Map<String, dynamic>> cartItems;
 
-  const DetailItem({
-    Key? key,
-    required this.data, // Passing product data
-    required this.cartItems, // Passing cart items from HomePage
-  }) : super(key: key);
+  const DetailItem({Key? key, required this.data, required this.cartItems})
+    : super(key: key);
 
   @override
   State<DetailItem> createState() => _DetailItemState();
 }
 
 class _DetailItemState extends State<DetailItem> {
-  int num = 20; // A placeholder, you might not need this
-  int? selectedSize; // Holds selected size for product
-  Color? selectedColor; // Holds selected color for product
+  int? selectedSize;
+  Color? selectedColor;
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.data; // Accessing product data passed from HomePage
+    final data = widget.data;
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blue,
         title: Text(
-          "Mody Shop", // Title of the app bar
+          "Mody Shop",
           style: TextStyle(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -43,136 +38,88 @@ class _DetailItemState extends State<DetailItem> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 🖼 Product Image Section
+            // Product Image
             Center(
               child: Container(
                 height: 200,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: AssetImage(data['image']), // Load product image
-                    fit: BoxFit.contain,
-                  ),
+                child: Image.network(
+                  data['image'],
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.broken_image,
+                      size: 100,
+                      color: Colors.grey,
+                    );
+                  },
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
-            // 📄 Title, Subtitle, and Price
+            // Title, Subtitle, Price
             Text(
-              data['title'], // Product title
+              data['title'],
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
-              data['subtitle'], // Product subtitle
+              data['subtitle'] ?? '',
               style: TextStyle(fontSize: 16, color: Colors.grey[700]),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Text(
-              "\$${data['price']}", // Product price
+              "\$${data['price']}",
               style: TextStyle(fontSize: 22, color: Colors.amber[700]),
             ),
 
-            // 🎨 Color Options Section
+            SizedBox(height: 10),
+
+            // Color selection
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Color : "),
+                Text("Color: "),
                 SizedBox(width: 10),
-                // GestureDetector for color selection
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedColor = Colors.grey; // Set selected color to grey
-                    });
-                    print('Selected Color: Gray');
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.grey, // Grey color option
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: selectedColor == Colors.grey
-                              ? Colors
-                                    .blue // Apply blue border if selected
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                _colorOption(Colors.grey),
                 SizedBox(width: 10),
-                // GestureDetector for black color selection
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedColor =
-                          Colors.black; // Set selected color to black
-                    });
-                    print('Selected Color: Black');
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 20,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.black, // Black color option
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: selectedColor == Colors.black
-                              ? Colors
-                                    .blue // Apply blue border if selected
-                              : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                _colorOption(Colors.black),
               ],
             ),
 
-            // 🧳 Size Selection Section
+            SizedBox(height: 10),
+
+            // Size selection
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Size : "),
-                // Loop to display size options
+                Text("Size: "),
                 for (int i = 25; i < 30; i++)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedSize = i; // Update the selected size
+                          selectedSize = i;
                         });
-                        print('Tapped on $i');
                       },
                       child: Container(
                         width: 32,
                         height: 32,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Colors.blue, // Color of the size options
+                          color: Colors.blue,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: selectedSize == i
-                                ? Colors
-                                      .orange // Apply orange border if size is selected
+                                ? Colors.orange
                                 : Colors.transparent,
                             width: 2,
                           ),
                         ),
                         child: Text(
-                          '$i', // Display size number
+                          '$i',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -183,9 +130,10 @@ class _DetailItemState extends State<DetailItem> {
                   ),
               ],
             ),
+
             SizedBox(height: 10),
 
-            // 🛒 Add to Cart Button
+            // Add to cart button
             Container(
               height: 50,
               width: 200,
@@ -195,7 +143,6 @@ class _DetailItemState extends State<DetailItem> {
               ),
               child: MaterialButton(
                 onPressed: () {
-                  // Check if both color and size are selected
                   if (selectedColor == null || selectedSize == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -203,22 +150,18 @@ class _DetailItemState extends State<DetailItem> {
                         backgroundColor: Colors.red,
                       ),
                     );
-                    return; // Do not proceed if either is not selected
+                    return;
                   }
 
-                  // Add the selected item to the cart
                   widget.cartItems.add({
-                    'image': widget.data['image'], // Add image of selected item
-                    'title': widget.data['title'], // Add title
-                    'subtitle': widget.data['subtitle'], // Add subtitle
-                    'price': widget.data['price'], // Add price
-                    'size': selectedSize, // Add size
-                    'color': selectedColor == Colors.grey
-                        ? "Gray"
-                        : "Black", // Add color
+                    'image': data['image'],
+                    'title': data['title'],
+                    'subtitle': data['subtitle'],
+                    'price': data['price'],
+                    'size': selectedSize,
+                    'color': selectedColor == Colors.grey ? "Gray" : "Black",
                   });
 
-                  // Navigate to the CartPage with updated cart
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -232,6 +175,29 @@ class _DetailItemState extends State<DetailItem> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Color selection widget
+  Widget _colorOption(Color color) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedColor = color;
+        });
+      },
+      child: Container(
+        height: 20,
+        width: 20,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(
+            color: selectedColor == color ? Colors.blue : Colors.transparent,
+            width: 2,
+          ),
         ),
       ),
     );
